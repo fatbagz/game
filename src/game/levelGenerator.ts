@@ -280,22 +280,25 @@ function generateSpringboardsAndBlocks(
         });
       } else {
         const blockCount = Math.floor(randomInRange(random, 3, 5));
-        const startY = closestMainPlatform.y - 60;
-        const targetY = floatingPlatform.y + floatingPlatform.height + 60;
-        const verticalDistance = startY - targetY;
-        const verticalStep = verticalDistance / (blockCount + 1);
 
-        const platformCenterX = closestMainPlatform.x + closestMainPlatform.width / 2;
-        const offsetDirection = random() < 0.5 ? -1 : 1;
-        const lateralOffset = randomInRange(random, 80, 150) * offsetDirection;
-        const startX = platformCenterX + lateralOffset;
-        const targetX = floatingPlatform.x + floatingPlatform.width / 2;
-        const horizontalDistance = targetX - startX;
-        const horizontalStep = horizontalDistance / (blockCount + 1);
+        const startY = closestMainPlatform.y - 100;
+        const targetY = floatingPlatform.y;
+        const totalVerticalDistance = startY - targetY;
+        const verticalStep = totalVerticalDistance / blockCount;
+
+        const platformEdge = closestMainPlatform.x + closestMainPlatform.width;
+        const floatingEdge = floatingPlatform.x;
+        const direction = floatingEdge > platformEdge ? 1 : -1;
+
+        const startX = direction > 0
+          ? platformEdge + 100
+          : closestMainPlatform.x - 150;
+
+        const horizontalSpacing = randomInRange(random, 90, 130);
 
         for (let i = 0; i < blockCount; i++) {
-          const blockX = startX + horizontalStep * (i + 1);
-          const blockY = startY - verticalStep * (i + 1);
+          const blockX = startX + (horizontalSpacing * i * direction);
+          const blockY = startY - (verticalStep * (i + 1));
 
           helpers.push({
             x: blockX - 25,
