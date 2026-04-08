@@ -285,7 +285,10 @@ function generateSpringboardsAndBlocks(
         const verticalDistance = startY - targetY;
         const verticalStep = verticalDistance / (blockCount + 1);
 
-        const startX = closestMainPlatform.x + closestMainPlatform.width * 0.4;
+        const platformCenterX = closestMainPlatform.x + closestMainPlatform.width / 2;
+        const offsetDirection = random() < 0.5 ? -1 : 1;
+        const lateralOffset = randomInRange(random, 80, 150) * offsetDirection;
+        const startX = platformCenterX + lateralOffset;
         const targetX = floatingPlatform.x + floatingPlatform.width / 2;
         const horizontalDistance = targetX - startX;
         const horizontalStep = horizontalDistance / (blockCount + 1);
