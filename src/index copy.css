@@ -1,0 +1,967 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'LapsusPro';
+  src: url('/assets/LapsusPro-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+  background-color: #fafaf5;
+  overflow-x: hidden;
+  color: #333;
+}
+
+.notebook {
+  min-height: 100vh;
+  background-color: #fafaf5;
+  background-image:
+    repeating-linear-gradient(
+      transparent 0px,
+      transparent 31px,
+      #a3c4df 31px,
+      #a3c4df 32px
+    );
+  position: relative;
+}
+
+.notebook::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.04;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.notebook-content {
+  position: relative;
+  z-index: 1;
+  padding: 48px 40px 80px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .notebook-content {
+    padding: 32px 20px 60px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notebook-content {
+    padding: 24px 16px 40px 16px;
+  }
+}
+
+@keyframes walkIn {
+  0% { transform: translateX(calc(-50vw - 150px)); }
+  100% { transform: translateX(0); }
+}
+
+.walk-in {
+  animation: walkIn 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes leftLeg {
+  0% { transform: rotate(-25deg); }
+  100% { transform: rotate(25deg); }
+}
+
+@keyframes rightLeg {
+  0% { transform: rotate(25deg); }
+  100% { transform: rotate(-25deg); }
+}
+
+.walking .leg-left {
+  animation: leftLeg 0.25s ease-in-out infinite alternate;
+}
+
+.walking .leg-right {
+  animation: rightLeg 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes armSwingL {
+  0% { transform: rotate(15deg); }
+  100% { transform: rotate(-15deg); }
+}
+
+@keyframes armSwingR {
+  0% { transform: rotate(-10deg); }
+  100% { transform: rotate(10deg); }
+}
+
+.walking .arm-left {
+  animation: armSwingL 0.25s ease-in-out infinite alternate;
+}
+
+.walking .arm-right {
+  animation: armSwingR 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes bob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+.walking .bob-group {
+  animation: bob 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes scratchArm {
+  0% { transform: rotate(0deg); }
+  12% { transform: rotate(-110deg); }
+  20% { transform: rotate(-100deg); }
+  28% { transform: rotate(-110deg); }
+  36% { transform: rotate(-100deg); }
+  44% { transform: rotate(-110deg); }
+  52% { transform: rotate(-100deg); }
+  60% { transform: rotate(-110deg); }
+  75% { transform: rotate(-50deg); }
+  90% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.scratching .arm-left {
+  animation: scratchArm 3s ease-in-out forwards;
+}
+
+@keyframes blinkEyes {
+  0%, 100% { opacity: 0; }
+  4% { opacity: 1; }
+  8% { opacity: 0; }
+  55% { opacity: 0; }
+  59% { opacity: 1; }
+  63% { opacity: 0; }
+}
+
+.eyelids {
+  opacity: 0;
+  animation: blinkEyes 4s ease-in-out infinite;
+}
+
+@keyframes headTiltScratch {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(8deg) translateX(3px); }
+  50% { transform: rotate(8deg) translateX(3px); }
+  70% { transform: rotate(-3deg); }
+  85% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.scratching .head-tilt {
+  animation: headTiltScratch 3s ease-in-out;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #444;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.6s infinite;
+}
+
+@keyframes doodlePop {
+  0% { opacity: 0; transform: scale(0.2) rotate(-20deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.doodle-pop {
+  opacity: 0;
+  animation: doodlePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes floatGentle {
+  0% { transform: translateY(0) rotate(var(--float-rot, 0deg)); }
+  50% { transform: translateY(-8px) rotate(calc(var(--float-rot, 0deg) + 3deg)); }
+  100% { transform: translateY(0) rotate(var(--float-rot, 0deg)); }
+}
+
+.float-gentle {
+  animation: floatGentle var(--float-dur, 4s) ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+.sketch-btn {
+  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+  font-size: 1.3rem;
+  padding: 14px 32px;
+  background: #fff;
+  border: 3px solid #333;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.sketch-btn:hover {
+  transform: scale(1.08) rotate(1.5deg);
+  background: #fff8dc;
+  box-shadow: 4px 4px 0 #333;
+}
+
+.sketch-btn:active {
+  transform: scale(0.98) rotate(-0.5deg);
+  box-shadow: 1px 1px 0 #333;
+}
+
+.meme-panel {
+  border: 3px solid #444;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+@keyframes titleBounce {
+  0% { transform: scale(0) rotate(-10deg); }
+  60% { transform: scale(1.15) rotate(3deg); }
+  80% { transform: scale(0.95) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.title-bounce {
+  animation: titleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes dropInBounce {
+  0%   { opacity: 0; transform: translateY(-80px) scaleY(1.2); }
+  55%  { opacity: 1; transform: translateY(10px) scaleY(0.93); }
+  75%  { transform: translateY(-6px) scaleY(1.04); }
+  90%  { transform: translateY(3px) scaleY(0.98); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+@keyframes bubblePopIn {
+  0%   { opacity: 0; transform: rotate(2deg) scale(0.4); }
+  60%  { opacity: 1; transform: rotate(2deg) scale(1.12); }
+  80%  { transform: rotate(2deg) scale(0.94); }
+  100% { opacity: 1; transform: rotate(2deg) scale(1); }
+}
+
+.pencil-stroke {
+  stroke: #333;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+@keyframes countdownPop {
+  0% { transform: scale(0.3); opacity: 0; }
+  30% { transform: scale(1.3); opacity: 1; }
+  60% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+.countdown-number {
+  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+  font-size: clamp(6rem, 20vw, 12rem);
+  font-weight: bold;
+  color: #333;
+  animation: countdownPop 0.9s ease-out forwards;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.08);
+}
+
+.hooey-title {
+  font-family: 'LapsusPro', 'Patrick Hand', cursive;
+  font-weight: bold;
+  color: #1a8cff;
+  -webkit-text-stroke: 1.5px #000;
+  paint-order: stroke fill;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hooey-title-sm {
+  font-family: 'LapsusPro', 'Patrick Hand', cursive;
+  font-weight: bold;
+  color: #1a8cff;
+  -webkit-text-stroke: 1px #000;
+  paint-order: stroke fill;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Roaming Meem (runs across the page) --- */
+
+.roaming-meem-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.floating-meem-body {
+  position: relative;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.08));
+}
+
+/* Running leg animations */
+@keyframes runLegLeft {
+  0% { transform: rotate(-35deg); }
+  50% { transform: rotate(35deg); }
+  100% { transform: rotate(-35deg); }
+}
+
+@keyframes runLegRight {
+  0% { transform: rotate(35deg); }
+  50% { transform: rotate(-35deg); }
+  100% { transform: rotate(35deg); }
+}
+
+.roaming-running .run-leg-left {
+  animation: runLegLeft 0.2s ease-in-out infinite;
+}
+
+.roaming-running .run-leg-right {
+  animation: runLegRight 0.2s ease-in-out infinite;
+}
+
+/* Running arm pump */
+@keyframes runArmLeft {
+  0% { transform: rotate(30deg); }
+  50% { transform: rotate(-30deg); }
+  100% { transform: rotate(30deg); }
+}
+
+@keyframes runArmRight {
+  0% { transform: rotate(-20deg); }
+  50% { transform: rotate(20deg); }
+  100% { transform: rotate(-20deg); }
+}
+
+.roaming-running .float-arm-left {
+  animation: runArmLeft 0.2s ease-in-out infinite;
+}
+
+.roaming-running .float-arm-right {
+  animation: runArmRight 0.2s ease-in-out infinite;
+}
+
+/* Laughing overrides */
+@keyframes laughShake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-4deg); }
+  40% { transform: rotate(4deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(3deg); }
+}
+
+.meem-laughing .float-bob-group {
+  animation: laughShake 0.3s ease-in-out infinite;
+}
+
+.meem-laughing .float-arm-left {
+  animation: runArmLeft 0.15s ease-in-out infinite;
+}
+
+.meem-laughing .float-arm-right {
+  animation: runArmRight 0.15s ease-in-out infinite;
+}
+
+/* Coins tossed by Meem */
+.floating-coins-area {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+@keyframes coinToss {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(var(--coin-scale, 0.8));
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--coin-vx), var(--coin-vy)) rotate(720deg) scale(var(--coin-scale, 0.8));
+    opacity: 0;
+  }
+}
+
+.floating-coin {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f7e06e, #e8c830 60%, #c9a820);
+  border: 2px solid #333;
+  animation: coinToss 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+.floating-coin::after {
+  content: 'M';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 9px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Roaming laugh bubbles */
+.roam-laugh-bubbles {
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  pointer-events: none;
+}
+
+@keyframes roamLaughFloat1 {
+  0% { transform: translate(0, 0) scale(0.5) rotate(-5deg); opacity: 0; }
+  20% { opacity: 1; transform: translate(-5px, -10px) scale(1) rotate(-5deg); }
+  100% { transform: translate(-20px, -45px) scale(0.7) rotate(-15deg); opacity: 0; }
+}
+
+@keyframes roamLaughFloat2 {
+  0% { transform: translate(0, 0) scale(0.5) rotate(3deg); opacity: 0; }
+  25% { opacity: 1; transform: translate(10px, -12px) scale(1.1) rotate(3deg); }
+  100% { transform: translate(25px, -50px) scale(0.6) rotate(12deg); opacity: 0; }
+}
+
+@keyframes roamLaughFloat3 {
+  0% { transform: translate(0, 0) scale(0.5) rotate(-2deg); opacity: 0; }
+  30% { opacity: 1; transform: translate(0, -8px) scale(1) rotate(-2deg); }
+  100% { transform: translate(5px, -40px) scale(0.8) rotate(8deg); opacity: 0; }
+}
+
+.roam-laugh-text {
+  position: absolute;
+  font-family: 'Patrick Hand', cursive;
+  font-weight: bold;
+  font-size: 16px;
+  color: #e06080;
+  white-space: nowrap;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+
+.rl-1 {
+  animation: roamLaughFloat1 1.8s ease-out infinite;
+}
+
+.rl-2 {
+  animation: roamLaughFloat2 2s ease-out 0.3s infinite;
+}
+
+.rl-3 {
+  animation: roamLaughFloat3 2.2s ease-out 0.6s infinite;
+  font-size: 13px;
+}
+
+/* --- Meem Speech Bubble --- */
+
+@keyframes speechPop {
+  0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+  40% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes speechFade {
+  0% { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.8) translateY(-8px); }
+}
+
+.meem-speech-bubble {
+  position: absolute;
+  top: -48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 2.5px solid #333;
+  border-radius: 14px;
+  padding: 5px 12px;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: speechPop 0.3s ease-out forwards;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.meem-speech-tail {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid #333;
+}
+
+.meem-speech-tail::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #fff;
+}
+
+/* --- Meem Interaction Animations --- */
+
+.meem-interaction-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes diamondSparkle {
+  0%, 100% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 1; }
+}
+
+/* --- Music Toggle (inline in navbar) --- */
+
+.music-toggle-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.music-toggle-inline:hover {
+  border-color: #333;
+  color: #333;
+  transform: rotate(-2deg) scale(1.1);
+}
+
+.music-toggle-inline:active {
+  transform: scale(0.95);
+}
+
+@keyframes eqBounce {
+  0%, 100% { height: 3px; }
+  50% { height: 10px; }
+}
+
+/* --- Game Page Styles --- */
+
+.game-leaderboard {
+  font-family: 'Patrick Hand', cursive;
+  background: rgba(15, 25, 40, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px 10px;
+  min-width: 150px;
+  max-width: 180px;
+  font-size: 0.72rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+@media (min-width: 640px) {
+  .game-leaderboard {
+    padding: 12px 14px;
+    min-width: 180px;
+    max-width: 220px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-leaderboard {
+    padding: 6px 8px;
+    min-width: 120px;
+    max-width: 160px;
+    font-size: 0.65rem;
+  }
+}
+
+.game-hud-pill {
+  background: rgba(15, 25, 40, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.game-hud-score {
+  font-size: 0.9rem;
+  padding: 4px 10px;
+}
+
+@media (min-width: 640px) {
+  .game-hud-pill {
+    font-size: 0.82rem;
+    padding: 5px 12px;
+  }
+  .game-hud-score {
+    font-size: 1.05rem;
+    padding: 6px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-hud-pill {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+  }
+  .game-hud-score {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+  .game-hud-home {
+    font-size: 0.6rem;
+    padding: 4px 8px;
+  }
+}
+
+.game-hud-home {
+  background: rgba(15, 25, 40, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  transition: all 0.2s ease;
+}
+
+.game-hud-home:hover {
+  background: rgba(15, 25, 40, 0.85);
+  color: rgba(255,255,255,0.9);
+  transform: scale(1.05);
+}
+
+.game-btn-primary {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.1rem;
+  padding: 10px 28px;
+  background: linear-gradient(135deg, #4a9ad4 0%, #3a80b8 100%);
+  color: #fff;
+  border: 2px solid #2a6a98;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(58, 128, 184, 0.3);
+}
+
+@media (max-width: 480px) {
+  .game-btn-primary {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+  }
+}
+
+.game-btn-primary:hover {
+  transform: scale(1.05) translateY(-1px);
+  box-shadow: 0 6px 20px rgba(58, 128, 184, 0.4);
+  background: linear-gradient(135deg, #5aaadd 0%, #4a90c8 100%);
+}
+
+.game-btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(58, 128, 184, 0.3);
+}
+
+.game-btn-secondary {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.1rem;
+  padding: 10px 28px;
+  background: rgba(255,255,255,0.9);
+  color: #4a6a8a;
+  border: 2px solid rgba(100, 160, 220, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.game-btn-secondary:hover {
+  transform: scale(1.05) translateY(-1px);
+  background: #fff;
+  border-color: rgba(100, 160, 220, 0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.game-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.game-link-subtle {
+  color: #8aa0b8;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.game-link-subtle:hover {
+  color: #5a8aaa;
+}
+
+.game-card-glow {
+  animation: gameCardGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes gameCardGlow {
+  0% { box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04); }
+  100% { box-shadow: 0 8px 32px rgba(74, 154, 212, 0.12), 0 2px 8px rgba(0,0,0,0.04); }
+}
+
+@keyframes gameMeemFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.game-meem-float {
+  animation: gameMeemFloat 2.5s ease-in-out infinite;
+}
+
+@keyframes gameOverlayFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.game-overlay-fade {
+  animation: gameOverlayFade 0.3s ease-out forwards;
+}
+
+@keyframes gameCardEnter {
+  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.game-card-enter {
+  animation: gameCardEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes gamePulse {
+  0%, 100% { box-shadow: 0 4px 12px rgba(58, 128, 184, 0.3); }
+  50% { box-shadow: 0 4px 24px rgba(58, 128, 184, 0.5); }
+}
+
+.game-pulse {
+  animation: gamePulse 2s ease-in-out infinite;
+}
+
+/* --- Construction / Maintenance Page --- */
+
+@keyframes constructionBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.construction-bob {
+  animation: constructionBob 1.8s ease-in-out infinite;
+}
+
+@keyframes hammerSwing {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  70% { transform: rotate(-25deg); }
+  80% { transform: rotate(5deg); }
+  88% { transform: rotate(-20deg); }
+  95% { transform: rotate(3deg); }
+}
+
+.construction-hammer-arm {
+  animation: hammerSwing 2.2s ease-in-out infinite;
+}
+
+@keyframes stepLeft {
+  0%, 40%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(-8deg); }
+  25% { transform: rotate(8deg); }
+}
+
+@keyframes stepRight {
+  0%, 40%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(8deg); }
+  30% { transform: rotate(-8deg); }
+}
+
+.construction-step-left {
+  animation: stepLeft 2.2s ease-in-out infinite;
+}
+
+.construction-step-right {
+  animation: stepRight 2.2s ease-in-out infinite 0.15s;
+}
+
+@keyframes gearSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.construction-gear {
+  animation: gearSpin 6s linear infinite;
+}
+
+@keyframes dustPuff {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(0.6); }
+  30% { opacity: 0.7; transform: translateY(-5px) scale(1); }
+  70% { opacity: 0.3; transform: translateY(-10px) scale(1.1); }
+}
+
+.construction-dust {
+  animation: dustPuff 2.5s ease-in-out infinite;
+}
+
+@keyframes constructionScene {
+  0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.construction-scene {
+  animation: constructionScene 0.6s ease-out forwards;
+}
+
+@keyframes storyOverlayIn {
+  0%   { opacity: 0; transform: scale(1.06); }
+  40%  { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes heroMeemFloat {
+  0%   { transform: translateY(0px) rotate(-1.5deg) scaleX(1); }
+  15%  { transform: translateY(-6px) rotate(-2.5deg) scaleX(1.01); }
+  30%  { transform: translateY(-13px) rotate(-1deg) scaleX(0.99); }
+  45%  { transform: translateY(-16px) rotate(1.5deg) scaleX(1.01); }
+  60%  { transform: translateY(-11px) rotate(2.5deg) scaleX(1); }
+  75%  { transform: translateY(-4px) rotate(1deg) scaleX(0.99); }
+  90%  { transform: translateY(-1px) rotate(-1deg) scaleX(1); }
+  100% { transform: translateY(0px) rotate(-1.5deg) scaleX(1); }
+}
+
+@keyframes heroMeemBreath {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  40%       { transform: scaleY(1.025) scaleX(0.985); }
+  70%       { transform: scaleY(0.99) scaleX(1.005); }
+}
+
+@keyframes heroMeemSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* --- Maintenance Page Orbit --- */
+
+@keyframes orbitMascot {
+  0%   { transform: rotate(0deg)   translateX(var(--orbit-r, 110px)) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(var(--orbit-r, 110px)) rotate(-360deg); }
+}
+
+.maintenance-orbit-track {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.maintenance-orbit-mascot {
+  animation: orbitMascot var(--orbit-dur, 3s) linear infinite;
+  display: block;
+  will-change: transform;
+}
+
+@keyframes maintenancePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(26, 140, 255, 0.18); }
+  50%       { box-shadow: 0 0 0 12px rgba(26, 140, 255, 0); }
+}
+
+.maintenance-card-pulse {
+  animation: maintenancePulse 2.4s ease-in-out infinite;
+}
+
+/* Small roaming meem – running body squash/stretch */
+@keyframes meemRunSquash {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  25%       { transform: scaleY(1.05) scaleX(0.96); }
+  50%       { transform: scaleY(0.96) scaleX(1.04); }
+  75%       { transform: scaleY(1.04) scaleX(0.97); }
+}
+
+/* Tilt the whole body while running */
+@keyframes meemRunTilt {
+  0%, 100% { transform: rotate(-5deg); }
+  50%       { transform: rotate(-2deg); }
+}
+
+/* Laugh-shake for small running meem */
+@keyframes meemRunLaughShake {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  25%       { transform: rotate(-8deg) translateY(-2px); }
+  50%       { transform: rotate(-2deg) translateY(1px); }
+  75%       { transform: rotate(-7deg) translateY(-1px); }
+}
+
+/* Shadow underneath runner */
+@keyframes meemRunShadow {
+  0%, 100% { transform: scaleX(1) translateY(0); opacity: 0.18; }
+  50%       { transform: scaleX(0.8) translateY(2px); opacity: 0.12; }
+}
