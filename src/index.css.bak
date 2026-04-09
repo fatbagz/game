@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+  }
+
+  body {
+    background:
+      repeating-linear-gradient(
+        transparent,
+        transparent 29px,
+        #a7d7f9 29px,
+        #a7d7f9 31px
+      ),
+      linear-gradient(to bottom, #fff 0%, #fff 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .meem-text-blue {
+    color: #3B9BFF;
+    -webkit-text-stroke: 2px #000;
+    text-stroke: 2px #000;
+    paint-order: stroke fill;
+  }
+
+  .meem-button {
+    border: 3px solid #000;
+    border-radius: 12px;
+    background: #fff;
+    transition: transform 0.1s ease;
+  }
+
+  .meem-button:hover {
+    transform: scale(1.05);
+  }
+
+  .meem-button:active {
+    transform: scale(0.95);
+  }
+}

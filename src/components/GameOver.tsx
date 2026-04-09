@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { DoodleButton, DoodlePanel, MeemTitle } from './DoodleUI';
 import { supabase } from '../game/supabaseClient';
 
 interface GameOverProps {
@@ -16,26 +15,17 @@ export function GameOver({ level, score, onRetry, onMainMenu }: GameOverProps) {
 
   useEffect(() => {
     const savedName = localStorage.getItem('meem_player_name');
-    if (savedName) {
-      setPlayerName(savedName);
-    }
+    if (savedName) setPlayerName(savedName);
   }, []);
 
   const handleSubmitScore = async () => {
     if (!playerName.trim() || submitting) return;
-
     setSubmitting(true);
     try {
       const { error } = await supabase
         .from('leaderboard')
-        .insert({
-          player_name: playerName.trim(),
-          score: score,
-          level_reached: level
-        });
-
+        .insert({ player_name: playerName.trim(), score, level_reached: level });
       if (error) throw error;
-
       localStorage.setItem('meem_player_name', playerName.trim());
       setSubmitted(true);
     } catch (error) {
@@ -46,51 +36,129 @@ export function GameOver({ level, score, onRetry, onMainMenu }: GameOverProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-20 p-4">
-      <DoodlePanel bordered className="max-w-md w-full text-center">
-        <div className="text-6xl mb-4">💀</div>
-        <MeemTitle size="lg">GAME OVER</MeemTitle>
-        <p className="text-black text-base font-medium mb-6 mt-2">rekt on level {level}</p>
+    <div
+      className="fixed inset-0 flex items-center justify-center z-20 p-4"
+      style={{
+        background: 'rgba(250,250,245,0.88)',
+        backdropFilter: 'blur(6px)',
+        fontFamily: "'Patrick Hand', cursive",
+      }}
+    >
+      <div
+        style={{
+          background: '#fafaf5',
+          border: '2.5px solid #333',
+          borderRadius: 16,
+          padding: '36px 40px',
+          boxShadow: '8px 8px 0 rgba(0,0,0,0.13)',
+          transform: 'rotate(-0.4deg)',
+          maxWidth: 400,
+          width: '100%',
+          textAlign: 'center',
+          animation: 'bubblePopIn 0.45s cubic-bezier(0.34,1.7,0.64,1) forwards',
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: 8 }}>rekt</div>
 
-        <div className="bg-white border-3 border-black p-6 mb-6" style={{ borderRadius: '12px' }}>
-          <div className="text-sm font-bold mb-1">final score</div>
-          <div className="text-5xl font-bold meem-text-blue">{score}</div>
+        <h2
+          className="hooey-title"
+          style={{ fontSize: 'clamp(1.8rem, 6vw, 2.6rem)', marginBottom: 6 }}
+        >
+          GAME OVER
+        </h2>
+
+        <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: 20 }}>
+          died on level {level}. ngmi.
+        </p>
+
+        <div
+          style={{
+            background: '#fff',
+            border: '2.5px solid #333',
+            borderRadius: 10,
+            padding: '16px 20px',
+            marginBottom: 20,
+            boxShadow: '3px 3px 0 rgba(0,0,0,0.08)',
+            transform: 'rotate(0.5deg)',
+          }}
+        >
+          <div style={{ fontSize: '0.72rem', color: '#888', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>final score</div>
+          <div style={{ fontSize: '2.8rem', fontWeight: 700, color: '#333', lineHeight: 1 }}>{score}</div>
         </div>
 
         {!submitted ? (
-          <div className="mb-6">
+          <div style={{ marginBottom: 20 }}>
             <input
               type="text"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmitScore()}
               placeholder="your name"
               maxLength={20}
-              className="w-full px-4 py-3 border-3 border-black font-medium text-center text-base mb-3"
-              style={{ borderRadius: '12px' }}
+              style={{
+                width: '100%',
+                padding: '10px 16px',
+                border: '2.5px solid #333',
+                borderRadius: 8,
+                background: '#fff',
+                fontFamily: "'Patrick Hand', cursive",
+                fontSize: '1rem',
+                textAlign: 'center',
+                color: '#333',
+                marginBottom: 10,
+                outline: 'none',
+                boxShadow: '3px 3px 0 rgba(0,0,0,0.08)',
+              }}
             />
-            <DoodleButton
+            <button
               onClick={handleSubmitScore}
               disabled={!playerName.trim() || submitting}
-              size="md"
+              className="sketch-btn"
+              style={{
+                width: '100%',
+                padding: '10px 20px',
+                fontSize: '0.95rem',
+                transform: 'rotate(-0.5deg)',
+                opacity: !playerName.trim() || submitting ? 0.5 : 1,
+                cursor: !playerName.trim() || submitting ? 'not-allowed' : 'pointer',
+              }}
             >
               {submitting ? 'submitting...' : 'submit to leaderboard'}
-            </DoodleButton>
+            </button>
           </div>
         ) : (
-          <div className="mb-6 text-green-600 font-bold text-lg">
-            score submitted!
+          <div
+            style={{
+              marginBottom: 20,
+              padding: '12px 16px',
+              background: '#fff',
+              border: '2px solid #ccc',
+              borderRadius: 8,
+              color: '#555',
+              fontSize: '0.95rem',
+            }}
+          >
+            score submitted! gm fren.
           </div>
         )}
 
-        <div className="space-y-3">
-          <DoodleButton onClick={onRetry} size="md">
-            retry
-          </DoodleButton>
-          <DoodleButton onClick={onMainMenu} size="sm">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <button
+            onClick={onRetry}
+            className="sketch-btn"
+            style={{ fontSize: '1.05rem', transform: 'rotate(-0.6deg)', width: '100%', padding: '12px 20px' }}
+          >
+            try again
+          </button>
+          <button
+            onClick={onMainMenu}
+            className="sketch-btn"
+            style={{ fontSize: '0.9rem', transform: 'rotate(0.7deg)', width: '100%', padding: '10px 20px', background: '#fff' }}
+          >
             main menu
-          </DoodleButton>
+          </button>
         </div>
-      </DoodlePanel>
+      </div>
     </div>
   );
 }

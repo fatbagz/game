@@ -40,15 +40,10 @@ export function Game() {
 
     const handleResize = () => {
       if (!canvasRef.current) return;
-
-      const container = canvasRef.current.parentElement;
-      if (!container) return;
-
-      canvasRef.current.width = container.clientWidth;
-      canvasRef.current.height = container.clientHeight;
-
+      canvasRef.current.width = window.innerWidth;
+      canvasRef.current.height = window.innerHeight;
       if (engineRef.current) {
-        engineRef.current.resize(container.clientWidth, container.clientHeight);
+        engineRef.current.resize(window.innerWidth, window.innerHeight);
       }
     };
 
@@ -97,13 +92,8 @@ export function Game() {
     engineRef.current.start(levelId);
   };
 
-  const handleStartGame = () => {
-    startLevel(1);
-  };
-
-  const handleLevelSelect = (levelId: number) => {
-    startLevel(levelId);
-  };
+  const handleStartGame = () => startLevel(1);
+  const handleLevelSelect = (levelId: number) => startLevel(levelId);
 
   const handleNextLevel = () => {
     const nextLevel = gameState.currentLevel + 1;
@@ -114,9 +104,7 @@ export function Game() {
     }
   };
 
-  const handleRetry = () => {
-    startLevel(gameState.currentLevel);
-  };
+  const handleRetry = () => startLevel(gameState.currentLevel);
 
   const handleMainMenu = () => {
     if (engineRef.current) {
@@ -125,29 +113,57 @@ export function Game() {
     setGameState({ ...gameState, screen: 'menu' });
   };
 
-  const handleShowLevelSelect = () => {
-    setGameState({ ...gameState, screen: 'levelSelect' });
-  };
-
-  const handleShowHowToPlay = () => {
-    setGameState({ ...gameState, screen: 'howToPlay' });
-  };
-
-  const handleShowLeaderboard = () => {
-    setGameState({ ...gameState, screen: 'leaderboard' as GameState['screen'] });
-  };
-
-  const handleShowCharacterSelect = () => {
-    setGameState({ ...gameState, screen: 'characterSelect' as GameState['screen'] });
-  };
+  const handleShowLevelSelect = () => setGameState({ ...gameState, screen: 'levelSelect' });
+  const handleShowHowToPlay = () => setGameState({ ...gameState, screen: 'howToPlay' });
+  const handleShowLeaderboard = () => setGameState({ ...gameState, screen: 'leaderboard' as GameState['screen'] });
+  const handleShowCharacterSelect = () => setGameState({ ...gameState, screen: 'characterSelect' as GameState['screen'] });
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600">
-        <div className="text-center">
-          <div className="text-white text-4xl font-bold mb-4">Loading Game...</div>
-          <div className="w-64 h-2 bg-white/30 rounded-full overflow-hidden">
-            <div className="h-full bg-white rounded-full animate-pulse"></div>
+      <div
+        className="fixed inset-0 flex items-center justify-center notebook"
+        style={{ fontFamily: "'Patrick Hand', cursive" }}
+      >
+        <div className="text-center" style={{ zIndex: 1, position: 'relative' }}>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '2.5px solid #333',
+              borderRadius: 12,
+              padding: '32px 48px',
+              boxShadow: '6px 6px 0 rgba(0,0,0,0.12)',
+              transform: 'rotate(-0.5deg)',
+            }}
+          >
+            <p
+              className="hooey-title"
+              style={{ fontSize: '2.5rem', marginBottom: 12 }}
+            >
+              MEEM RUNNER
+            </p>
+            <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: 20 }}>
+              loading assets...
+            </p>
+            <div
+              style={{
+                width: 200,
+                height: 8,
+                background: '#e8e8e0',
+                border: '2px solid #333',
+                borderRadius: 4,
+                overflow: 'hidden',
+                margin: '0 auto',
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  background: '#333',
+                  borderRadius: 2,
+                  animation: 'loadingBar 1.2s ease-in-out infinite',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -155,14 +171,18 @@ export function Game() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
-      <div className="w-full h-full">
-        <canvas
-          ref={canvasRef}
-          className="w-full h-full"
-          style={{ imageRendering: 'pixelated' }}
-        />
-      </div>
+    <div className="fixed inset-0 notebook" style={{ overflow: 'hidden' }}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          imageRendering: 'pixelated',
+        }}
+      />
 
       {gameState.screen === 'menu' && (
         <MainMenu

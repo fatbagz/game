@@ -465,11 +465,21 @@ export class GameEngine {
     const viewWidth = this.canvas.width;
     const viewHeight = this.canvas.height;
 
-    const gradient = ctx.createLinearGradient(0, viewY, 0, viewY + viewHeight);
-    gradient.addColorStop(0, '#A8D8F0');
-    gradient.addColorStop(1, '#D6EAF8');
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = '#fafaf5';
     ctx.fillRect(viewX, viewY, viewWidth, viewHeight);
+
+    const lineSpacing = 32;
+    const startLine = Math.floor(viewY / lineSpacing) * lineSpacing;
+    ctx.strokeStyle = '#a3c4df';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.7;
+    for (let y = startLine; y < viewY + viewHeight + lineSpacing; y += lineSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(viewX, y);
+      ctx.lineTo(viewX + viewWidth, y);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   }
 
   private renderPlatforms(): void {
@@ -481,27 +491,26 @@ export class GameEngine {
       if (platform.x + platform.width < startX || platform.x > endX) continue;
 
       if (platform.type === 'springboard') {
-        this.ctx.fillStyle = '#FF6B6B';
-        this.ctx.strokeStyle = '#C92A2A';
-        this.ctx.lineWidth = 3;
+        this.ctx.fillStyle = '#fff8dc';
+        this.ctx.strokeStyle = '#333';
+        this.ctx.lineWidth = 2.5;
         this.ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
         this.ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
 
-        this.ctx.fillStyle = '#FFE66D';
-        this.ctx.beginPath();
-        this.ctx.moveTo(platform.x + platform.width / 2, platform.y + 5);
-        this.ctx.lineTo(platform.x + platform.width / 2 - 8, platform.y + 15);
-        this.ctx.lineTo(platform.x + platform.width / 2 + 8, platform.y + 15);
-        this.ctx.fill();
+        this.ctx.fillStyle = '#333';
+        this.ctx.font = `bold ${Math.min(platform.height - 4, 16)}px 'Patrick Hand', cursive`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('spring', platform.x + platform.width / 2, platform.y + platform.height / 2);
       } else if (platform.type === 'floating_block') {
-        this.ctx.fillStyle = '#9B59B6';
-        this.ctx.strokeStyle = '#6C3483';
-        this.ctx.lineWidth = 3;
+        this.ctx.fillStyle = '#e8e8e0';
+        this.ctx.strokeStyle = '#333';
+        this.ctx.lineWidth = 2.5;
         this.ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
         this.ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
 
-        this.ctx.strokeStyle = '#D7BDE2';
-        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = '#aaa';
+        this.ctx.lineWidth = 1.5;
         this.ctx.strokeRect(platform.x + 5, platform.y + 5, platform.width - 10, platform.height - 10);
       } else {
         if (platformImg) {
@@ -509,13 +518,25 @@ export class GameEngine {
           if (pattern) {
             this.ctx.fillStyle = pattern;
             this.ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+            this.ctx.strokeStyle = '#333';
+            this.ctx.lineWidth = 2.5;
+            this.ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
           }
         } else {
-          this.ctx.fillStyle = '#4A90E2';
-          this.ctx.strokeStyle = '#000000';
-          this.ctx.lineWidth = 3;
+          this.ctx.fillStyle = '#e0d8c8';
+          this.ctx.strokeStyle = '#333';
+          this.ctx.lineWidth = 2.5;
           this.ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
           this.ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
+
+          this.ctx.strokeStyle = '#bbb';
+          this.ctx.lineWidth = 1;
+          for (let hx = platform.x + 20; hx < platform.x + platform.width; hx += 20) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(hx, platform.y);
+            this.ctx.lineTo(hx, platform.y + platform.height);
+            this.ctx.stroke();
+          }
         }
       }
     }
@@ -569,24 +590,31 @@ export class GameEngine {
         enemy.position.y + enemy.height / 2
       );
 
-      this.ctx.fillStyle = '#1a1a1a';
-      this.ctx.strokeStyle = '#000000';
+      const w = enemy.width;
+      const h = enemy.height;
+      const hw = w / 2;
+      const hh = h / 2;
+
+      this.ctx.fillStyle = '#333';
+      this.ctx.strokeStyle = '#333';
       this.ctx.lineWidth = 2;
 
       this.ctx.beginPath();
-      this.ctx.arc(0, 0, 12, 0, Math.PI * 2);
+      this.ctx.ellipse(0, -hh * 0.35, hw * 0.6, hh * 0.5, 0, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.stroke();
 
-      this.ctx.fillStyle = '#ff0000';
-      this.ctx.fillRect(-3, -2, 2, 2);
-      this.ctx.fillRect(1, -2, 2, 2);
+      this.ctx.fillStyle = '#ff4444';
+      this.ctx.beginPath();
+      this.ctx.ellipse(-hw * 0.22, -hh * 0.35, 3, 4, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.ellipse(hw * 0.22, -hh * 0.35, 3, 4, 0, 0, Math.PI * 2);
+      this.ctx.fill();
 
-      this.ctx.fillStyle = '#333333';
-      this.ctx.fillRect(-6, 8, 5, 6);
-      this.ctx.strokeRect(-6, 8, 5, 6);
-      this.ctx.fillRect(1, 8, 5, 6);
-      this.ctx.strokeRect(1, 8, 5, 6);
+      this.ctx.fillStyle = '#555';
+      this.ctx.fillRect(-hw * 0.35, hh * 0.05, hw * 0.25, hh * 0.45);
+      this.ctx.fillRect(hw * 0.1, hh * 0.05, hw * 0.25, hh * 0.45);
 
       this.ctx.restore();
     }
@@ -683,34 +711,25 @@ export class GameEngine {
 
   private renderGoal(): void {
     const goalSize = 60;
+    const gx = this.currentLevel.goalPosition.x;
+    const gy = this.currentLevel.goalPosition.y;
 
-    this.ctx.fillStyle = '#FFD700';
-    this.ctx.strokeStyle = '#000000';
-    this.ctx.lineWidth = 4;
+    const pulse = 0.85 + Math.sin(this.playerAnimFrame / 20) * 0.15;
+    this.ctx.globalAlpha = pulse;
 
-    this.ctx.fillRect(
-      this.currentLevel.goalPosition.x,
-      this.currentLevel.goalPosition.y,
-      goalSize,
-      goalSize
-    );
+    this.ctx.fillStyle = '#fff8dc';
+    this.ctx.strokeStyle = '#333';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.fillRect(gx, gy, goalSize, goalSize);
+    this.ctx.strokeRect(gx, gy, goalSize, goalSize);
 
-    this.ctx.strokeRect(
-      this.currentLevel.goalPosition.x,
-      this.currentLevel.goalPosition.y,
-      goalSize,
-      goalSize
-    );
-
-    this.ctx.fillStyle = '#FFF';
-    this.ctx.font = 'bold 24px Arial';
+    this.ctx.fillStyle = '#333';
+    this.ctx.font = "bold 13px 'Patrick Hand', cursive";
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(
-      'GOAL',
-      this.currentLevel.goalPosition.x + goalSize / 2,
-      this.currentLevel.goalPosition.y + goalSize / 2
-    );
+    this.ctx.fillText('GOAL', gx + goalSize / 2, gy + goalSize / 2);
+
+    this.ctx.globalAlpha = 1;
   }
 
   resize(width: number, height: number): void {
