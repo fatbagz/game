@@ -1,9 +1,9 @@
 import { Vector2, Rectangle, Platform } from './types';
 
-export const GRAVITY = 0.55;
-export const MAX_FALL_SPEED = 14;
+export const GRAVITY = 0.6;
+export const MAX_FALL_SPEED = 15;
 export const PLAYER_SPEED = 5;
-export const JUMP_POWER = -17;
+export const JUMP_POWER = -14.4;
 export const FRICTION = 0.8;
 
 export function checkCollision(rect1: Rectangle, rect2: Rectangle): boolean {

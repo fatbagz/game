@@ -1,161 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'LapsusPro';
-  src: url('/assets/LapsusPro-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+@layer base {
+  * {
+    font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+  }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
-  background-color: #fafaf5;
-  overflow-x: hidden;
-  color: #333;
-}
-
-.notebook {
-  min-height: 100vh;
-  background-color: #fafaf5;
-  background-image:
-    repeating-linear-gradient(
-      transparent 0px,
-      transparent 31px,
-      #a3c4df 31px,
-      #a3c4df 32px
-    );
-  position: relative;
-}
-
-.notebook::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.04;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-}
-
-.hooey-title {
-  font-family: 'LapsusPro', 'Patrick Hand', cursive;
-  font-weight: bold;
-  color: #1a8cff;
-  -webkit-text-stroke: 1.5px #000;
-  paint-order: stroke fill;
-  text-shadow: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.hooey-title-sm {
-  font-family: 'LapsusPro', 'Patrick Hand', cursive;
-  font-weight: bold;
-  color: #1a8cff;
-  -webkit-text-stroke: 1px #000;
-  paint-order: stroke fill;
-  text-shadow: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.sketch-btn {
-  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
-  font-size: 1.1rem;
-  padding: 12px 28px;
-  background: #fff;
-  border: 2.5px solid #333;
-  cursor: pointer;
-  color: #333;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.2s ease;
-  position: relative;
-  border-radius: 8px;
-}
-
-.sketch-btn:hover {
-  transform: scale(1.06) rotate(1deg);
-  background: #fff8dc;
-  box-shadow: 4px 4px 0 #333;
-}
-
-.sketch-btn:active {
-  transform: scale(0.97) rotate(-0.5deg);
-  box-shadow: 1px 1px 0 #333;
-}
-
-@keyframes dropInBounce {
-  0%   { opacity: 0; transform: translateY(-80px) scaleY(1.2); }
-  55%  { opacity: 1; transform: translateY(10px) scaleY(0.93); }
-  75%  { transform: translateY(-6px) scaleY(1.04); }
-  90%  { transform: translateY(3px) scaleY(0.98); }
-  100% { opacity: 1; transform: translateY(0) scaleY(1); }
-}
-
-@keyframes bubblePopIn {
-  0%   { opacity: 0; transform: scale(0.4); }
-  60%  { opacity: 1; transform: scale(1.12); }
-  80%  { transform: scale(0.94); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes heroMeemFloat {
-  0%   { transform: translateY(0px) rotate(-1.5deg) scaleX(1); }
-  15%  { transform: translateY(-6px) rotate(-2.5deg) scaleX(1.01); }
-  30%  { transform: translateY(-13px) rotate(-1deg) scaleX(0.99); }
-  45%  { transform: translateY(-16px) rotate(1.5deg) scaleX(1.01); }
-  60%  { transform: translateY(-11px) rotate(2.5deg) scaleX(1); }
-  75%  { transform: translateY(-4px) rotate(1deg) scaleX(0.99); }
-  90%  { transform: translateY(-1px) rotate(-1deg) scaleX(1); }
-  100% { transform: translateY(0px) rotate(-1.5deg) scaleX(1); }
-}
-
-@keyframes loadingBar {
-  0%   { width: 20%; margin-left: 0; }
-  50%  { width: 60%; margin-left: 20%; }
-  100% { width: 20%; margin-left: 80%; }
+  body {
+    background:
+      repeating-linear-gradient(
+        transparent,
+        transparent 29px,
+        #a7d7f9 29px,
+        #a7d7f9 31px
+      ),
+      linear-gradient(to bottom, #fff 0%, #fff 100%);
+    background-attachment: fixed;
+  }
 }
 
 @layer utilities {
   .meem-text-blue {
-    color: #1a8cff;
-    -webkit-text-stroke: 1px #000;
+    color: #3B9BFF;
+    -webkit-text-stroke: 2px #000;
+    text-stroke: 2px #000;
     paint-order: stroke fill;
   }
 
   .meem-button {
-    border: 2.5px solid #333;
-    border-radius: 8px;
+    border: 3px solid #000;
+    border-radius: 12px;
     background: #fff;
-    font-family: 'Patrick Hand', cursive;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    transition: transform 0.1s ease;
   }
 
   .meem-button:hover {
-    transform: scale(1.05) rotate(-0.5deg);
-    box-shadow: 3px 3px 0 #333;
+    transform: scale(1.05);
   }
 
   .meem-button:active {
-    transform: scale(0.97);
-  }
-
-  .font-hand {
-    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    transform: scale(0.95);
   }
 }
