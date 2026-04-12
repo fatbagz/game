@@ -460,7 +460,7 @@ export function generateLevel(levelNumber: number): Level {
   const goalX = finalPlatform.x + finalPlatform.width - 100;
   const goalY = finalPlatform.y - 60;
 
-  const backgroundIndex = Math.floor(random() * 3);
+  const backgroundIndex = Math.floor(random() * 19);
 
   return {
     id: levelNumber,

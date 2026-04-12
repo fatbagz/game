@@ -465,11 +465,44 @@ export class GameEngine {
     const viewWidth = this.canvas.width;
     const viewHeight = this.canvas.height;
 
-    const gradient = ctx.createLinearGradient(0, viewY, 0, viewY + viewHeight);
-    gradient.addColorStop(0, '#A8D8F0');
-    gradient.addColorStop(1, '#D6EAF8');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(viewX, viewY, viewWidth, viewHeight);
+    const bgIndex = this.currentLevel.backgroundIndex ?? 0;
+    const bgImg = this.assets.backgrounds[bgIndex % this.assets.backgrounds.length];
+
+    if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
+      const parallaxFactor = 0.3;
+      const bgScrollX = viewX * parallaxFactor;
+
+      const imgW = bgImg.naturalWidth || bgImg.width;
+      const imgH = bgImg.naturalHeight || bgImg.height;
+
+      const scale = viewHeight / imgH;
+      const scaledW = imgW * scale;
+
+      const offsetX = bgScrollX % scaledW;
+
+      const tilesNeeded = Math.ceil(viewWidth / scaledW) + 2;
+
+      ctx.save();
+      ctx.resetTransform();
+
+      const startTile = Math.floor(offsetX / scaledW);
+
+      for (let i = -1; i <= tilesNeeded; i++) {
+        const drawX = i * scaledW - (offsetX % scaledW);
+        ctx.drawImage(bgImg, drawX, 0, scaledW, viewHeight);
+      }
+
+      ctx.restore();
+    } else {
+      const gradient = ctx.createLinearGradient(0, viewY, 0, viewY + viewHeight);
+      gradient.addColorStop(0, '#A8D8F0');
+      gradient.addColorStop(1, '#D6EAF8');
+      ctx.save();
+      ctx.resetTransform();
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+      ctx.restore();
+    }
   }
 
   private renderPlatforms(): void {

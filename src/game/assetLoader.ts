@@ -97,21 +97,48 @@ async function loadEnemies(): Promise<HTMLImageElement[]> {
   return enemies;
 }
 
+const SUPABASE_STORAGE_URL = 'https://nttpiddjkjkkyglusfga.supabase.co/storage/v1/object/public/assets';
+
+const BACKGROUND_INDICES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 async function loadBackgrounds(): Promise<HTMLImageElement[]> {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1600;
-  canvas.height = 900;
-  const ctx = canvas.getContext('2d')!;
+  const shuffledIndices = shuffleArray(BACKGROUND_INDICES);
+  const backgrounds: HTMLImageElement[] = [];
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, '#87CEEB');
-  gradient.addColorStop(1, '#E0F6FF');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (const idx of shuffledIndices) {
+    try {
+      const img = await loadImage(`${SUPABASE_STORAGE_URL}/Game-backround-assets/Level%20(${idx}).png`);
+      backgrounds.push(img);
+    } catch {
+      console.warn(`Background ${idx} failed to load`);
+    }
+  }
 
-  const img = new Image();
-  img.src = canvas.toDataURL();
-  return [img];
+  if (backgrounds.length === 0) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1600;
+    canvas.height = 900;
+    const ctx = canvas.getContext('2d')!;
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#87CEEB');
+    gradient.addColorStop(1, '#E0F6FF');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const img = new Image();
+    img.src = canvas.toDataURL();
+    backgrounds.push(img);
+  }
+
+  return backgrounds;
 }
 
 async function loadEnvironment(): Promise<HTMLImageElement[]> {
