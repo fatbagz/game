@@ -112,10 +112,9 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 async function loadBackgrounds(): Promise<HTMLImageElement[]> {
-  const shuffledIndices = shuffleArray(BACKGROUND_INDICES);
   const backgrounds: HTMLImageElement[] = [];
 
-  for (const idx of shuffledIndices) {
+  for (const idx of BACKGROUND_INDICES) {
     try {
       const img = await loadImage(`${SUPABASE_STORAGE_URL}/Game-backround-assets/Level%20(${idx}).png`, true);
       backgrounds.push(img);

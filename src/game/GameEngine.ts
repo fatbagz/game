@@ -209,7 +209,7 @@ export class GameEngine {
 
   private update(deltaTime: number): void {
     this.playerAnimFrame++;
-    this.bgScrollOffset += 0.4 * deltaTime;
+    this.bgScrollOffset += 1.8 * deltaTime;
 
     const input = this.input.update();
 
@@ -481,18 +481,15 @@ export class GameEngine {
       const imgW = bgImg.naturalWidth;
       const imgH = bgImg.naturalHeight;
 
-      const upscaleFactor = 1.35;
-      const scaledH = viewHeight * upscaleFactor;
+      const scaledH = viewHeight;
       const scaledW = (imgW / imgH) * scaledH;
-      const drawY = (viewHeight - scaledH) / 2;
 
-      const parallaxX = viewX * 0.2;
-      const totalOffsetX = (parallaxX + this.bgScrollOffset) % scaledW;
+      const loopOffset = this.bgScrollOffset % scaledW;
 
       const tilesNeeded = Math.ceil(viewWidth / scaledW) + 2;
       for (let i = -1; i <= tilesNeeded; i++) {
-        const drawX = i * scaledW - totalOffsetX;
-        ctx.drawImage(bgImg, drawX, drawY, scaledW, scaledH);
+        const drawX = i * scaledW - loopOffset;
+        ctx.drawImage(bgImg, drawX, 0, scaledW, scaledH);
       }
     } else {
       const gradient = ctx.createLinearGradient(0, 0, 0, viewHeight);
