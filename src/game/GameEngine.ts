@@ -55,7 +55,9 @@ export class GameEngine {
     onStateChange: (state: GameState) => void
   ) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d')!;
+    this.ctx = canvas.getContext('2d', { alpha: false })!;
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
     this.assets = assets;
     this.gameState = gameState;
     this.onStateChange = onStateChange;
@@ -472,19 +474,20 @@ export class GameEngine {
 
     ctx.save();
     ctx.resetTransform();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
-      const imgW = bgImg.naturalWidth || bgImg.width;
-      const imgH = bgImg.naturalHeight || bgImg.height;
+      const imgW = bgImg.naturalWidth;
+      const imgH = bgImg.naturalHeight;
 
-      const upscaleFactor = 1.4;
+      const upscaleFactor = 1.35;
       const scaledH = viewHeight * upscaleFactor;
       const scaledW = (imgW / imgH) * scaledH;
       const drawY = (viewHeight - scaledH) / 2;
 
-      const parallaxX = viewX * 0.25;
-      const autoScrollX = this.bgScrollOffset;
-      const totalOffsetX = (parallaxX + autoScrollX) % scaledW;
+      const parallaxX = viewX * 0.2;
+      const totalOffsetX = (parallaxX + this.bgScrollOffset) % scaledW;
 
       const tilesNeeded = Math.ceil(viewWidth / scaledW) + 2;
       for (let i = -1; i <= tilesNeeded; i++) {

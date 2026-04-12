@@ -2,9 +2,10 @@ import { GameAssets } from './types';
 
 const ASSET_BASE_PATH = '/meem-game-items';
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadImage(src: string, crossOrigin = false): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    if (crossOrigin) img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
     img.src = src;
@@ -116,7 +117,7 @@ async function loadBackgrounds(): Promise<HTMLImageElement[]> {
 
   for (const idx of shuffledIndices) {
     try {
-      const img = await loadImage(`${SUPABASE_STORAGE_URL}/Game-backround-assets/Level%20(${idx}).png`);
+      const img = await loadImage(`${SUPABASE_STORAGE_URL}/Game-backround-assets/Level%20(${idx}).png`, true);
       backgrounds.push(img);
     } catch {
       console.warn(`Background ${idx} failed to load`);
