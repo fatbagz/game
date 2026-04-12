@@ -46,6 +46,7 @@ export class GameEngine {
   private quoteTimer: number;
   private quoteDisplay: boolean;
   private playerAnimFrame: number;
+  private bgScrollOffset: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -77,6 +78,7 @@ export class GameEngine {
     this.quoteTimer = 0;
     this.quoteDisplay = false;
     this.playerAnimFrame = 0;
+    this.bgScrollOffset = 0;
 
     this.gameLoop = this.gameLoop.bind(this);
   }
@@ -205,6 +207,7 @@ export class GameEngine {
 
   private update(deltaTime: number): void {
     this.playerAnimFrame++;
+    this.bgScrollOffset += 0.4 * deltaTime;
 
     const input = this.input.update();
 
@@ -461,48 +464,42 @@ export class GameEngine {
   private renderBackground(): void {
     const ctx = this.ctx;
     const viewX = this.camera.x;
-    const viewY = this.camera.y;
     const viewWidth = this.canvas.width;
     const viewHeight = this.canvas.height;
 
-    const bgIndex = this.currentLevel.backgroundIndex ?? 0;
-    const bgImg = this.assets.backgrounds[bgIndex % this.assets.backgrounds.length];
+    const bgIndex = (this.currentLevel.backgroundIndex ?? 0) % Math.max(this.assets.backgrounds.length, 1);
+    const bgImg = this.assets.backgrounds[bgIndex];
+
+    ctx.save();
+    ctx.resetTransform();
 
     if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
-      const parallaxFactor = 0.3;
-      const bgScrollX = viewX * parallaxFactor;
-
       const imgW = bgImg.naturalWidth || bgImg.width;
       const imgH = bgImg.naturalHeight || bgImg.height;
 
-      const scale = viewHeight / imgH;
-      const scaledW = imgW * scale;
+      const upscaleFactor = 1.4;
+      const scaledH = viewHeight * upscaleFactor;
+      const scaledW = (imgW / imgH) * scaledH;
+      const drawY = (viewHeight - scaledH) / 2;
 
-      const offsetX = bgScrollX % scaledW;
+      const parallaxX = viewX * 0.25;
+      const autoScrollX = this.bgScrollOffset;
+      const totalOffsetX = (parallaxX + autoScrollX) % scaledW;
 
       const tilesNeeded = Math.ceil(viewWidth / scaledW) + 2;
-
-      ctx.save();
-      ctx.resetTransform();
-
-      const startTile = Math.floor(offsetX / scaledW);
-
       for (let i = -1; i <= tilesNeeded; i++) {
-        const drawX = i * scaledW - (offsetX % scaledW);
-        ctx.drawImage(bgImg, drawX, 0, scaledW, viewHeight);
+        const drawX = i * scaledW - totalOffsetX;
+        ctx.drawImage(bgImg, drawX, drawY, scaledW, scaledH);
       }
-
-      ctx.restore();
     } else {
-      const gradient = ctx.createLinearGradient(0, viewY, 0, viewY + viewHeight);
+      const gradient = ctx.createLinearGradient(0, 0, 0, viewHeight);
       gradient.addColorStop(0, '#A8D8F0');
       gradient.addColorStop(1, '#D6EAF8');
-      ctx.save();
-      ctx.resetTransform();
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, viewWidth, viewHeight);
-      ctx.restore();
     }
+
+    ctx.restore();
   }
 
   private renderPlatforms(): void {
